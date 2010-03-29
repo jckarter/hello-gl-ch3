@@ -19,7 +19,7 @@ static struct {
     GLuint vertex_shader, fragment_shader, program;
     
     struct {
-        GLint fade_factor;
+        GLint timer;
         GLint textures[2];
     } uniforms;
 
@@ -27,7 +27,7 @@ static struct {
         GLint position;
     } attributes;
 
-    GLfloat fade_factor;
+    GLfloat timer;
 } g_resources;
 
 /*
@@ -136,10 +136,10 @@ static GLuint make_program(GLuint vertex_shader, GLuint fragment_shader)
  * Data used to seed our vertex array and element array buffers:
  */
 static const GLfloat g_vertex_buffer_data[] = { 
-    -1.0f, -1.0f,
-     1.0f, -1.0f,
-    -1.0f,  1.0f,
-     1.0f,  1.0f
+    -1.0f, -1.0f, 0.0f, 1.0f,
+     1.0f, -1.0f, 0.0f, 1.0f,
+    -1.0f,  1.0f, 0.0f, 1.0f,
+     1.0f,  1.0f, 0.0f, 1.0f,
 };
 static const GLuint g_element_buffer_data[] = { 0, 1, 2, 3 };
 
@@ -183,8 +183,8 @@ static int make_resources(void)
     if (g_resources.program == 0)
         return 0;
 
-    g_resources.uniforms.fade_factor
-        = glGetUniformLocation(g_resources.program, "fade_factor");
+    g_resources.uniforms.timer
+        = glGetUniformLocation(g_resources.program, "timer");
     g_resources.uniforms.textures[0]
         = glGetUniformLocation(g_resources.program, "textures[0]");
     g_resources.uniforms.textures[1]
@@ -199,10 +199,10 @@ static int make_resources(void)
 /*
  * GLUT callbacks:
  */
-static void update_fade_factor(void)
+static void update_timer(void)
 {
     int milliseconds = glutGet(GLUT_ELAPSED_TIME);
-    g_resources.fade_factor = sinf((float)milliseconds * 0.001f) * 0.5f + 0.5f;
+    g_resources.timer = (float)milliseconds * 0.001f;
     glutPostRedisplay();
 }
 
@@ -210,7 +210,7 @@ static void render(void)
 {
     glUseProgram(g_resources.program);
 
-    glUniform1f(g_resources.uniforms.fade_factor, g_resources.fade_factor);
+    glUniform1f(g_resources.uniforms.timer, g_resources.timer);
     
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, g_resources.textures[0]);
@@ -223,10 +223,10 @@ static void render(void)
     glBindBuffer(GL_ARRAY_BUFFER, g_resources.vertex_buffer);
     glVertexAttribPointer(
         g_resources.attributes.position,  /* attribute */
-        2,                                /* size */
+        4,                                /* size */
         GL_FLOAT,                         /* type */
         GL_FALSE,                         /* normalized? */
-        sizeof(GLfloat)*2,                /* stride */
+        sizeof(GLfloat)*4,                /* stride */
         (void*)0                          /* array buffer offset */
     );
     glEnableVertexAttribArray(g_resources.attributes.position);
@@ -252,7 +252,7 @@ int main(int argc, char** argv)
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
     glutInitWindowSize(400, 300);
     glutCreateWindow("Hello World");
-    glutIdleFunc(&update_fade_factor);
+    glutIdleFunc(&update_timer);
     glutDisplayFunc(&render);
 
     glewInit();
