@@ -139,14 +139,14 @@ static const GLfloat g_vertex_buffer_data[] = {
     -1.0f, -1.0f, 0.0f, 1.0f,
      1.0f, -1.0f, 0.0f, 1.0f,
     -1.0f,  1.0f, 0.0f, 1.0f,
-     1.0f,  1.0f, 0.0f, 1.0f,
+     1.0f,  1.0f, 0.0f, 1.0f
 };
 static const GLuint g_element_buffer_data[] = { 0, 1, 2, 3 };
 
 /*
  * Load and create all of our resources:
  */
-static int make_resources(void)
+static int make_resources(const char *vertex_shader_file)
 {
     g_resources.vertex_buffer = make_buffer(
         GL_ARRAY_BUFFER,
@@ -167,7 +167,7 @@ static int make_resources(void)
 
     g_resources.vertex_shader = make_shader(
         GL_VERTEX_SHADER,
-        "hello-gl.v.glsl"
+        vertex_shader_file
     );
     if (g_resources.vertex_shader == 0)
         return 0;
@@ -208,6 +208,9 @@ static void update_timer(void)
 
 static void render(void)
 {
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     glUseProgram(g_resources.program);
 
     glUniform1f(g_resources.uniforms.timer, g_resources.timer);
@@ -261,7 +264,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    if (!make_resources()) {
+    if (!make_resources(argc >= 2 ? argv[1] : "hello-gl.v.glsl")) {
         fprintf(stderr, "Failed to load resources\n");
         return 1;
     }
