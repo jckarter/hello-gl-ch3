@@ -1,8 +1,10 @@
 This is the source code for the "hello world" OpenGL application described in
 chapter 3 of Joe Groff's OpenGL tutorial: 
 
-http://duriansoftware.com/joe/<<Not published yet>>
+http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-3:-3D-transformation-and-projection.html
 
 You will need the GLUT <http://www.opengl.org/resources/libraries/glut/> and
 GLEW <http://glew.sourceforge.net/> libraries to compile this program. It also
 requires OpenGL 2.0 or later.
+
+Do whatever you like with this source code.
